@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>Reversi_Backend_Testing</RootNamespace>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -14,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ReversiRestApi\ReversiRestApi.csproj" />
+    <ProjectReference Include="..\ReversiRestAPI\ReversiRestAPI.csproj" />
   </ItemGroup>
 
 </Project>
