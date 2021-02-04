@@ -5,8 +5,9 @@ namespace ReversiRestAPI.Interfaces
 {
     public interface IGameRepository
     {
-        void AddGame(Game game);
+        string AddGame(Game game);
         List<Game> GetGames();
         Game GetGame(string gameToken);
+        IList<Game> GetPlayerGames(string playerToken);
     }
 }
