@@ -1,4 +1,5 @@
 ﻿using ReversiRestApi.Enums;
+using ReversiRestAPI.Enums;
 
 namespace ReversiRestApi.Interfaces
 {
@@ -12,6 +13,8 @@ namespace ReversiRestApi.Interfaces
         Color[,] Board { get; set; }
         Color Moving { get; set; }
         public int MoveCount { get; set; }
+        public GameStatus Status { get; set; }
+        public string Winner { get; set; }
 
         bool Pass();
         bool Finished();

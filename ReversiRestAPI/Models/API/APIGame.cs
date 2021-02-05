@@ -10,17 +10,22 @@ namespace ReversiRestAPI.Models.API
         public string Description { get; set; }
         public string Token { get; set; }
         public string Board { get; set; }
+        public string MovingPlayer { get; set; }
+        public string Moving { get; set; }
+        public string Status { get; set; }
 
         public static APIGame FromGame(Game game)
         {
-            
             return new APIGame
             {
                 Player1Token = game.Player1Token,
                 Player2Token = game.Player2Token,
                 Description = game.Description,
                 Token = game.Token,
-                Board = JsonConvert.SerializeObject(game.Board)
+                Board = JsonConvert.SerializeObject(game.Board),
+                MovingPlayer = game.Players[game.Moving],
+                Moving = game.Moving.ToString(),
+                Status = game.Status.ToString(),
             };
         }
     }

@@ -17,8 +17,14 @@ namespace ReversiRestAPI.Controllers
             this.iRepository = iRepository;
         }
 
+        // GET api/player/{player}/games
         [HttpGet("{player}/games")]
         public ActionResult<IEnumerable<APIGame>> GetGamesByPlayerToken(string player) =>
             iRepository.GetPlayerGames(player).Select(APIGame.FromGame).ToList();
+
+        // GET api/player/{player}/wins
+        [HttpGet("{player}/wins")]
+        public ActionResult<int> GetPlayerWins(string player) =>
+            iRepository.GetPlayerGames(player).Count(x => x.Winner == player);
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using ReversiRestApi.Enums;
+using ReversiRestAPI.Enums;
 using ReversiRestApi.Interfaces;
 
 namespace ReversiRestApi.Models
@@ -15,15 +17,21 @@ namespace ReversiRestApi.Models
         public string Player2Token { get; set; }
         public Color[,] Board { get; set; }
         public Color Moving { get; set; }
-        public Color OppositeMoving => Moving == Color.White ? Color.Black : Color.White;
+        public Color OppositeMoving => GetOpposingColor(Moving);
         public int MoveCount { get; set; }
+        public GameStatus Status { get; set; }
+        public string Winner { get; set; }
+        public Dictionary<Color, string> Players { get; set; }
 
 
         private int Size { get; } = 8;
 
         public Game()
         {
+            Status = GameStatus.Waiting;
             Board = new Color[Size, Size];
+            Players = new Dictionary<Color, string>();
+
             for (var row = 0; row < Size; row++)
             {
                 for (var col = 0; col < Size; col++)
@@ -37,6 +45,16 @@ namespace ReversiRestApi.Models
                         Board[row, col] = Color.Black;
                 }
             }
+        }
+
+        public Color GetOpposingColor(Color color)
+        {
+            return color == Color.White ? Color.Black : Color.White;
+        }
+
+        public Color GetPlayerColor(string player)
+        {
+            return Players.First(x => x.Value == player).Key;
         }
 
         public void Print()
@@ -167,12 +185,11 @@ namespace ReversiRestApi.Models
                     startCol += (int)direction.Y;
 
                     var cell = GetCell(startRow, startCol);
-                    var opp = Moving == Color.White ? Color.Black : Color.White;
 
                     if (cell == Color.None && (startRow != rowMove || startCol != colMove))
                         break;
 
-                    if (cell == opp)
+                    if (cell == OppositeMoving)
                         foundOpp = true;
 
                     if (foundOpp && cell == Moving)
@@ -248,6 +265,53 @@ namespace ReversiRestApi.Models
         public bool OnBoard(int row, int col)
         {
             return (row >= 0 && row < Size && col >= 0 && col < Size);
+        }
+
+        public bool Join(string joiningPlayer)
+        {
+            if (Player2Token is null)
+            {
+                Player2Token = joiningPlayer;
+                Status = GameStatus.Starting;
+                return true;
+            }
+
+            return false;
+        }
+
+        public void AssignColors()
+        {
+            if (Player1Token is null || Player2Token is null)
+                return;
+
+            var colorOne = new Random().Next(0, 1) == 1 ? Color.White : Color.Black;
+
+            Players[colorOne]                   = Player1Token;
+            Players[GetOpposingColor(colorOne)] = Player2Token;
+        }
+
+        public bool StartGame(string startingPlayer)
+        {
+            if (Player2Token is null && Status != GameStatus.Starting)
+                return false;
+
+            AssignColors();
+            Moving = GetPlayerColor(startingPlayer);
+
+            Status = GameStatus.Running;
+            return true;
+        }
+
+        public void FinishGame(string winner)
+        {
+            Winner = winner;
+            Status = GameStatus.Finished;
+        }
+
+        public void Surrender(string surrenderer)
+        {
+            var winner = surrenderer == Player1Token ? Player2Token : Player1Token;
+            FinishGame(winner);
         }
     }
 }
