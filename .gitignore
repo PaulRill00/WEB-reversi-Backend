@@ -374,6 +374,8 @@ ehthumbs_vista.db
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 
+ReversiRestAPI/Properties/launchSettings.json
+
 # Windows Installer files
 *.cab
 *.msi
@@ -383,3 +385,4 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+1
