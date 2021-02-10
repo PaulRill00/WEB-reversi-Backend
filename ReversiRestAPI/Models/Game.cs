@@ -26,6 +26,9 @@ namespace ReversiRestApi.Models
 
         private int Size { get; } = 8;
 
+        /**
+         * Initialize the game, and fill the board with values
+         */
         public Game()
         {
             Status = GameStatus.Waiting;
@@ -47,6 +50,9 @@ namespace ReversiRestApi.Models
             }
         }
 
+        /**
+         * Get the other color
+         */
         public Color GetOpposingColor(Color color)
         {
             return color == Color.White ? Color.Black : Color.White;
@@ -57,6 +63,9 @@ namespace ReversiRestApi.Models
             return Players.First(x => x.Value == player).Key;
         }
 
+        /**
+         * Debug print the board to the console
+         */
         public void Print()
         {
             RunForAllCells((row, col) =>
@@ -68,6 +77,11 @@ namespace ReversiRestApi.Models
             });
         }
 
+        /**
+         * Pass on move
+         *
+         * @return The player has passed
+         */
         public bool Pass()
         {
             var possible = false;
@@ -87,6 +101,11 @@ namespace ReversiRestApi.Models
             return false;
         }
 
+        /**
+         * Get all empty cells on the board
+         *
+         * @return Cell[] all empty cells
+         */
         public Cell[] GetEmptyCells()
         {
             var cells = new List<Cell>();
@@ -103,11 +122,17 @@ namespace ReversiRestApi.Models
             return cells.ToArray();
         }
 
+        /**
+         * Swap the moving player
+         */
         public void SwapMoving()
         {
             Moving = OppositeMoving;
         }
 
+        /**
+         * See if the game has finished
+         */
         public bool Finished()
         {
             if (MoveCount >= 60)
@@ -116,6 +141,13 @@ namespace ReversiRestApi.Models
             return !PlayerHasPossibleMoves(Moving) && !PlayerHasPossibleMoves(OppositeMoving);
         }
 
+        /**
+         * Check if a player has possible moves
+         *
+         * @param Color player The player to check for
+         *
+         * @return The player can move
+         */
         public bool PlayerHasPossibleMoves(Color player)
         {
             var possibleMoves = false;
@@ -130,7 +162,12 @@ namespace ReversiRestApi.Models
             return possibleMoves;
         }
 
-        public bool RunForAllCells(Func<int,int,bool> function)
+        /**
+         * Run a task for all cells
+         *
+         * @param Func<int,int,bool> function The function to run for all cells
+         */
+        public void RunForAllCells(Func<int,int,bool> function)
         {
             for (var row = 0; row < Size; row++)
             {
@@ -139,10 +176,13 @@ namespace ReversiRestApi.Models
                     function(row, col);
                 }
             }
-
-            return false;
         }
 
+        /**
+         * Get the winning color based on amount of fields
+         *
+         * @return Color The opposing color
+         */
         public Color WinningColor()
         {
             var scoreCount = new Dictionary<Color, int>() 
@@ -164,6 +204,11 @@ namespace ReversiRestApi.Models
             return scoreCount[Color.White] > scoreCount[Color.Black] ? Color.White : Color.Black;
         }
 
+        /**
+         * Calculate all valid directions starting at a single cell
+         *
+         * @return Vector2[] of valid directions
+         */
         public Vector2[] GetPossibleDirections(int rowMove, int colMove)
         {
             var vectors = new List<Vector2>();
@@ -206,6 +251,12 @@ namespace ReversiRestApi.Models
             return vectors.ToArray();
         }
 
+        /**
+         * Check if the move is valid
+         *
+         * @param int rowMove The row to start on
+         * @param int colMove The col to start on
+         */
         public bool IsPossible(int rowMove, int colMove)
         {
             if (!(rowMove >= 0 && rowMove < Size && colMove >= 0 && colMove < Size))
@@ -217,6 +268,13 @@ namespace ReversiRestApi.Models
             return GetPossibleDirections(rowMove, colMove).Length >= 1;
         }
 
+        /**
+         * Flip all colors to the moving player within the directions
+         *
+         * @param int row   The row to start on
+         * @param int col   The col to start on
+         * @param Vector2[] directions
+         */
         public void FlipColorsFromDirections(int row, int col, Vector2[] directions)
         {
             foreach (var direction in directions)
@@ -239,6 +297,14 @@ namespace ReversiRestApi.Models
             }
         }
 
+        /**
+         * Set a move on the row and col
+         *
+         * @param int rowMove The row to start at
+         * @param int colMove The col to tart at
+         *
+         * @return If the move was valid
+         */
         public bool Move(int rowMove, int colMove)
         {
             if (!IsPossible(rowMove, colMove))
@@ -251,17 +317,40 @@ namespace ReversiRestApi.Models
             return true;
         }
 
+        /**
+         * Get a colored cell based on row and col
+         *
+         * @param int row The row to get at
+         * @param int col The col to get at
+         *
+         * @return The color on the row and col
+         */
         public Color GetCell(int row, int col)
         {
             return OnBoard(row, col) ? Board[row, col] : Color.None;
         }
 
+        /**
+         * Set the cell and check if the board contains the field
+         *
+         * @param int row       The row to set at
+         * @param int col       The col to set at
+         * @param Color color   The color to write to the cell
+         */
         public void SetCell(int row, int col, Color color)
         {
             if (OnBoard(row, col) && GetCell(row, col) == Color.None)
                 Board[row, col] = color;
         }
 
+        /**
+         * Check if the cell is on the board
+         *
+         * @param int row Row to check
+         * @param int col Col to check
+         *
+         * @return If the cell is on the board
+         */
         public bool OnBoard(int row, int col)
         {
             return (row >= 0 && row < Size && col >= 0 && col < Size);
@@ -279,6 +368,9 @@ namespace ReversiRestApi.Models
             return false;
         }
 
+        /**
+         * Assign the colors to the players
+         */
         public void AssignColors()
         {
             if (Player1Token is null || Player2Token is null)
@@ -290,6 +382,13 @@ namespace ReversiRestApi.Models
             Players[GetOpposingColor(colorOne)] = Player2Token;
         }
 
+        /**
+         * Start the game with a starting player
+         *
+         * @param string startPlayer The token of the starting player
+         *
+         * @return The game has started
+         */
         public bool StartGame(string startingPlayer)
         {
             if (Player2Token is null && Status != GameStatus.Starting)
@@ -302,12 +401,22 @@ namespace ReversiRestApi.Models
             return true;
         }
 
+        /**
+         * Finish the game with a winning player
+         *
+         * @param string winner Winning player string
+         */
         public void FinishGame(string winner)
         {
             Winner = winner;
             Status = GameStatus.Finished;
         }
 
+        /**
+         * Surrender the game with a surrendering player token
+         *
+         * @param string surrenderer The player token of the person who gave up
+         */
         public void Surrender(string surrenderer)
         {
             var winner = surrenderer == Player1Token ? Player2Token : Player1Token;
