@@ -375,6 +375,8 @@ ehthumbs_vista.db
 $RECYCLE.BIN/
 
 ReversiRestAPI/Properties/launchSettings.json
+ReversiRestAPI/appsettings.json
+ReversiRestAPI/wwwroot
 
 # Windows Installer files
 *.cab

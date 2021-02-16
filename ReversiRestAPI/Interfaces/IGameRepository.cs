@@ -7,7 +7,7 @@ namespace ReversiRestAPI.Interfaces
     {
         string AddGame(Game game);
         List<Game> GetGames();
-        Game GetGame(string gameToken);
+        Game? GetGame(string gameToken);
         IList<Game> GetPlayerGames(string playerToken);
     }
 }

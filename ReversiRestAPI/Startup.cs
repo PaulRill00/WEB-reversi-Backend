@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ReversiRestAPI.DAL;
+using ReversiRestApi.Interfaces;
 using ReversiRestAPI.Interfaces;
-using ReversiRestAPI.Models;
+using ReversiRestAPI.Models.Database;
 
 namespace ReversiBackendAPI
 {
@@ -22,7 +25,11 @@ namespace ReversiBackendAPI
         {
             services.AddControllers();
 
-            services.AddSingleton<IGameRepository, GameRepository>();
+            services.AddDbContext<DatabaseContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("MSSQL")));
+            
+            var dbContext = services.BuildServiceProvider().GetRequiredService<DatabaseContext>();
+            services.AddSingleton(typeof(IGameRepository), new GameAccessLayer(dbContext));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

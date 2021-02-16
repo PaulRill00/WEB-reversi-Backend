@@ -20,11 +20,11 @@ namespace ReversiRestApi.Models
         public Color OppositeMoving => GetOpposingColor(Moving);
         public int MoveCount { get; set; }
         public GameStatus Status { get; set; }
-        public string Winner { get; set; }
+        public string? Winner { get; set; }
         public Dictionary<Color, string> Players { get; set; }
 
 
-        private int Size { get; } = 8;
+        public int Size { get; set;  } = 8;
 
         /**
          * Initialize the game, and fill the board with values
@@ -34,6 +34,7 @@ namespace ReversiRestApi.Models
             Status = GameStatus.Waiting;
             Board = new Color[Size, Size];
             Players = new Dictionary<Color, string>();
+            Moving = Color.None;
 
             for (var row = 0; row < Size; row++)
             {

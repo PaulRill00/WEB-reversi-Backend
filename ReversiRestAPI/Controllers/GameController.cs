@@ -1,9 +1,8 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using ReversiRestApi.Enums;
+using ReversiRestAPI.Enums;
 using ReversiRestAPI.Interfaces;
 using ReversiRestApi.Models;
 using ReversiRestAPI.Models.API;
@@ -28,19 +27,18 @@ namespace ReversiRestAPI.Controllers
 
         // GET api/game/waiting
         [HttpGet("waiting")]
-        public ActionResult<IEnumerable<string>> GetGameDescriptionsOfGamesWithWaitingPlayers() =>
-            iRepository.GetGames().FindAll(x => x.Player2Token is null).Select(x => x.Description).ToList();
+        public ActionResult<IEnumerable<APIGame>> GetGameDescriptionsOfGamesWithWaitingPlayers() =>
+            iRepository.GetGames().FindAll(x => x.Player2Token == "").Select(APIGame.FromGame).ToList();
 
         // POST api/game
         [HttpPost]
         public void AddNewGame([FromBody] APIGame game)
         {
-            Debug.WriteLine(game);
+
             iRepository.AddGame(new Game()
             {
-                Player1Token = game.Player1Token,
-                Player2Token = game.Player2Token,
-                Description = game.Description,
+                Player1Token = game.Player1Token ?? "",
+                Description = game.Description ?? "",
             });
         }
 
@@ -78,6 +76,11 @@ namespace ReversiRestAPI.Controllers
             var game = iRepository.GetGame(token);
             if (game is null)
                 return NotFound();
+
+            if (body.Player2Token is null)
+            {
+
+            }
 
             var result = game.Join(body.Player2Token);
 

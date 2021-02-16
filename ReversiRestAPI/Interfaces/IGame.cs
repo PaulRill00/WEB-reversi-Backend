@@ -14,7 +14,7 @@ namespace ReversiRestApi.Interfaces
         Color Moving { get; set; }
         public int MoveCount { get; set; }
         public GameStatus Status { get; set; }
-        public string Winner { get; set; }
+        public string? Winner { get; set; }
 
         bool Pass();
         bool Finished();
