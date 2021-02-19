@@ -5,6 +5,8 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
+FROM paulrill/reversi:frontend AS frontend
+
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["ReversiRestAPI/ReversiRestAPI.csproj", "ReversiRestAPI/"]
@@ -19,4 +21,5 @@ RUN dotnet publish "ReversiRestAPI.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY --from=frontend /wwwroot /app/wwwroot
 ENTRYPOINT ["dotnet", "ReversiRestAPI.dll"]
