@@ -388,3 +388,4 @@ ReversiRestAPI/wwwroot
 # Windows shortcuts
 *.lnk
 1
+ReversiRestAPI/appsettings.json
