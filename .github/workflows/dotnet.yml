@@ -22,3 +22,16 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - name: Docker login
+      env:
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      run: docker login -u paulrill -p $DOCKER_PASSWORD
+    - name: Build Backend Image
+      run: docker build -f Dockerfile.backend -t paulrill/reversi:backend .
+    - name: Build Latest Image
+      run: docker build -f Dockerfile.latest -t paulrill/reversi:latest .
+    - name: Push Backend image
+      run: docker push paulrill/reversi:backend
+    - name: Push Latest image
+      run: docker push paulrill/reversi:latest
+      
