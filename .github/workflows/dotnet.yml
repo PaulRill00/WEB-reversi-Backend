@@ -7,10 +7,21 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-
+  frontend:
     runs-on: ubuntu-latest
+    name: Clone frontend code
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          name: paulrill00/web-reversi-frontend
+      - name: npm install
+        run: npm install && npm install --global gulp-cli
+      - name: gulp build
+        run: gulp build 
 
+  build:
+    runs-on: ubuntu-latest
+    
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
