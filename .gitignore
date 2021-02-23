@@ -389,3 +389,4 @@ ReversiRestAPI/wwwroot
 *.lnk
 1
 ReversiRestAPI/appsettings.json
+ReversiRestAPI/Properties/launchSettings.json

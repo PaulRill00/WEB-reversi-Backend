@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -25,8 +26,12 @@ namespace ReversiBackendAPI
         {
             services.AddControllers();
 
+            var connectionString = "Data Source=<SQLSource>; Initial Catalog=ReversiDbRestApi; User ID=SA; Password=<SQLPass>";
+            connectionString = connectionString.Replace("<SQLSource>", Environment.GetEnvironmentVariable("SQLSource"));
+            connectionString = connectionString.Replace("<SQLPass>", Environment.GetEnvironmentVariable("SQLPass"));
+
             services.AddDbContext<DatabaseContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("MSSQL")));
+                options.UseSqlServer(connectionString));
             
             var dbContext = services.BuildServiceProvider().GetRequiredService<DatabaseContext>();
             services.AddSingleton(typeof(IGameRepository), new GameAccessLayer(dbContext));
