@@ -35,6 +35,8 @@ namespace ReversiBackendAPI
             
             var dbContext = services.BuildServiceProvider().GetRequiredService<DatabaseContext>();
             services.AddSingleton(typeof(IGameRepository), new GameAccessLayer(dbContext));
+            
+            dbContext.Database.Migrate();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
