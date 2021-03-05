@@ -19,9 +19,9 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore ReversiBackend.sln
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build ReversiBackend.sln --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test ReversiBackend.sln --no-build --verbosity normal
     - name: Docker login
       env:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
