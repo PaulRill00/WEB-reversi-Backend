@@ -7,16 +7,16 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
-COPY ["ReversiMVCApp/ReversiMVCApp.csproj", "ReversiMVCApp/"]
-RUN dotnet restore "ReversiMVCApp/ReversiMVCApp.csproj"
+COPY ["ReversiMvcApp/ReversiMvcApp.csproj", "ReversiMvcApp/"]
+RUN dotnet restore "ReversiMvcApp/ReversiMvcApp.csproj"
 COPY . .
-WORKDIR "/src/ReversiMVCApp"
-RUN dotnet build "ReversiMVCApp.csproj" -c Release -o /app/build
+WORKDIR "/src/ReversiMvcApp"
+RUN dotnet build "ReversiMvcApp.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "ReversiMVCApp.csproj" -c Release -o /app/publish
+RUN dotnet publish "ReversiMvcApp.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "ReversiMVCApp.dll"]
+ENTRYPOINT ["dotnet", "ReversiMvcApp.dll"]

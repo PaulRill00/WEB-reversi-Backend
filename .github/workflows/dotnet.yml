@@ -28,14 +28,14 @@ jobs:
       run: docker login -u paulrill -p $DOCKER_PASSWORD
     - name: Build Api Image
       run: docker build -f Dockerfile.api -t paulrill/reversi:api .
-    - name: Build Backend Image
-      run: docker build -f Dockerfile.backend -t paulrill/reversi:backend .
+    - name: Build Mvc Image
+      run: docker build -f Dockerfile.mvc -t paulrill/reversi:mvc .
     - name: Build Latest Image
       run: docker build -f Dockerfile.latest -t paulrill/reversi:latest .
     - name: Push API image
       run: docker push paulrill/reversi:api
-    - name: Push Backend image
-      run: docker push paulrill/reversi:backend
+    - name: Push Mvc image
+      run: docker push paulrill/reversi:mvc
     - name: Push Latest image
       run: docker push paulrill/reversi:latest
     - name: Restart API Docker Container
