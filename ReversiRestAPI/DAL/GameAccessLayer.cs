@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ReversiRestAPI.Interfaces;
@@ -11,7 +10,7 @@ namespace ReversiRestAPI.DAL
 {
     public class GameAccessLayer : IGameRepository
     {
-        private DatabaseContext Context { get; }
+        public DatabaseContext Context { get; }
         private DbSet<GameModel> Games { get; }
 
         public GameAccessLayer(DatabaseContext context)
@@ -42,6 +41,19 @@ namespace ReversiRestAPI.DAL
         {
             return Games.Where(x => x.Player1Token == playerToken || x.Player2Token == playerToken)
                 .Select(x => x.ToGame()).ToList();
+        }
+
+        public void SaveGame(Game game)
+        {
+            var local = Context.Games.FirstOrDefault(x => x.ID == game.ID);
+            Context.Entry(local).State = EntityState.Detached;
+
+            /*local = GameModel.FromGame(game);*/
+            /*Context.Entry(local).CurrentValues.SetValues(GameModel.FromGame(game));*/
+            local = GameModel.FromGame(game);
+            Context.Entry(local).State = EntityState.Modified;
+
+            Context.SaveChanges();
         }
     }
 }

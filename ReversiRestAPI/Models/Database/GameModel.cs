@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 using ReversiRestApi.Enums;
 using ReversiRestAPI.Enums;
@@ -30,6 +29,7 @@ namespace ReversiRestAPI.Models.Database
         {
             return new GameModel()
             {
+                ID = game.ID,
                 Token = game.Token,
                 Description = game.Description,
                 Player1Token = game.Player1Token,

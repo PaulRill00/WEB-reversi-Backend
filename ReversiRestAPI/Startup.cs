@@ -1,16 +1,15 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
+using Microsoft.EntityFrameworkCore;
 using ReversiRestAPI.DAL;
-using ReversiRestApi.Interfaces;
 using ReversiRestAPI.Interfaces;
 using ReversiRestAPI.Models.Database;
 
-namespace ReversiBackendAPI
+namespace ReversiRestAPI
 {
     public class Startup
     {
@@ -32,10 +31,10 @@ namespace ReversiBackendAPI
 
             services.AddDbContext<DatabaseContext>(options =>
                 options.UseSqlServer(connectionString));
-            
+
             var dbContext = services.BuildServiceProvider().GetRequiredService<DatabaseContext>();
             services.AddSingleton(typeof(IGameRepository), new GameAccessLayer(dbContext));
-            
+
             dbContext.Database.Migrate();
         }
 
@@ -47,13 +46,11 @@ namespace ReversiBackendAPI
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            app.UseRouting();
 
             app.UseDefaultFiles();
 
             app.UseStaticFiles();
-
-            app.UseRouting();
 
             app.UseAuthorization();
 

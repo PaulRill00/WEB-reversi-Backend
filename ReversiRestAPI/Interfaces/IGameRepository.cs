@@ -9,5 +9,6 @@ namespace ReversiRestAPI.Interfaces
         List<Game> GetGames();
         Game? GetGame(string gameToken);
         IList<Game> GetPlayerGames(string playerToken);
+        void SaveGame(Game game);
     }
 }

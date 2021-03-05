@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using ReversiRestApi.Enums;
 using ReversiRestApi.Models;
 
@@ -7,6 +6,7 @@ namespace ReversiRestAPI.Models.API
 {
     public class APIGame
     {
+        public int ID { get; set; }
         public string? Player1Token { get; set; }
         public string? Player2Token { get; set; }
         public string? Description { get; set; }
@@ -20,6 +20,7 @@ namespace ReversiRestAPI.Models.API
         {
             return new APIGame
             {
+                ID = game.ID,
                 Player1Token = game.Player1Token,
                 Player2Token = game.Player2Token,
                 Description = game.Description,

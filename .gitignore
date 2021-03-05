@@ -388,5 +388,9 @@ ReversiRestAPI/wwwroot
 # Windows shortcuts
 *.lnk
 1
+
 ReversiRestAPI/appsettings.json
 ReversiRestAPI/Properties/launchSettings.json
+
+ReversiMvcApp/appsettings.json
+ReversiMvcApp/Properties/launchSettings.json

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Configuration;
-using Microsoft.EntityFrameworkCore;
-using ReversiRestApi.Models;
-using ReversiRestAPI.Models.DbModels;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace ReversiRestAPI.Models.Database
 {

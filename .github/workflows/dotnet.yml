@@ -26,16 +26,24 @@ jobs:
       env:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
       run: docker login -u paulrill -p $DOCKER_PASSWORD
+    - name: Build Api Image
+      run: docker build -f Dockerfile.api -t paulrill/reversi:api .
     - name: Build Backend Image
       run: docker build -f Dockerfile.backend -t paulrill/reversi:backend .
     - name: Build Latest Image
       run: docker build -f Dockerfile.latest -t paulrill/reversi:latest .
+    - name: Push API image
+      run: docker push paulrill/reversi:api
     - name: Push Backend image
       run: docker push paulrill/reversi:backend
     - name: Push Latest image
       run: docker push paulrill/reversi:latest
-    - name: Restart Docker Container
+    - name: Restart API Docker Container
       env:
-        PORTAINER_URL: ${{ secrets.PORTAINER_URL }}
-      run: curl --location --request POST $PORTAINER_URL
+        API_PORTAINER_URL: ${{ secrets.API_PORTAINER_URL }}
+      run: curl --location --request POST $API_PORTAINER_URL
+    - name: Restart MVC Docker Container
+      env:
+        MVC_PORTAINER_URL: ${{ secrets.MVC_PORTAINER_URL }}
+      run: curl --location --request POST $MVC_PORTAINER_URL
       

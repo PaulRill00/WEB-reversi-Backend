@@ -48,5 +48,9 @@ namespace ReversiRestAPI.Models
 
         public IList<Game> GetPlayerGames(string playerToken) =>
             Games.FindAll(x => x.Player1Token == playerToken || x.Player2Token == playerToken);
+
+        public void SaveGame(Game game)
+        {
+        }
     }
 }

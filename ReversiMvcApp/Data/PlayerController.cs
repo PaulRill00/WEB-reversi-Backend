@@ -1,19 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ReversiMvcApp.Data;
 using ReversiMvcApp.Models;
 
 namespace ReversiMvcApp.Controllers
 {
-    public class PlayerController
+    public class PlayerController : Controller
     {
         private ReversiDbContext context;
 
         public PlayerController(ReversiDbContext context)
         {
             this.context = context;
+        }
+
+        [Authorize]
+        public Player GetLoggedInPlayer(Controller origin)
+        {
+            ClaimsPrincipal currentUser = origin.User;
+            var guid = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+            return GetPlayer(guid) ?? CreatePlayer(guid, currentUser.FindFirst(ClaimTypes.Name).Value);
         }
 
         public Player CreatePlayer(string guid, string name)

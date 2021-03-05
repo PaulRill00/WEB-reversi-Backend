@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using ReversiRestAPI.Enums;
+using System.Net.Http;
+using ReversiRestAPI.DAL;
 using ReversiRestAPI.Interfaces;
 using ReversiRestApi.Models;
 using ReversiRestAPI.Models.API;
@@ -34,7 +35,6 @@ namespace ReversiRestAPI.Controllers
         [HttpPost]
         public void AddNewGame([FromBody] APIGame game)
         {
-
             iRepository.AddGame(new Game()
             {
                 Player1Token = game.Player1Token ?? "",
@@ -64,8 +64,9 @@ namespace ReversiRestAPI.Controllers
             var result = game.StartGame(body.Player);
 
             if (!result)
-                return Forbid();
+                throw new Exception("Could not start the game");
 
+            iRepository.SaveGame(game);
             return APIGame.FromGame(game);
         }
 
@@ -77,16 +78,13 @@ namespace ReversiRestAPI.Controllers
             if (game is null)
                 return NotFound();
 
-            if (body.Player2Token is null)
-            {
-
-            }
-
             var result = game.Join(body.Player2Token);
 
             if (!result)
-                return Forbid();
+                throw new HttpRequestException("Could not start the game");
 
+            iRepository.SaveGame(game);
+            var x = ((GameAccessLayer) iRepository).Context.Games.ToList();
             return APIGame.FromGame(game);
         }
 
@@ -116,6 +114,7 @@ namespace ReversiRestAPI.Controllers
             if (result)
                 return APIGame.FromGame(game);
 
+            iRepository.SaveGame(game);
             return Unauthorized();
         }
 
@@ -128,6 +127,7 @@ namespace ReversiRestAPI.Controllers
                 return NotFound();
 
             game.Surrender(body.Player);
+            iRepository.SaveGame(game);
             return APIGame.FromGame(game);
         }
     }

@@ -359,7 +359,7 @@ namespace ReversiRestApi.Models
 
         public bool Join(string joiningPlayer)
         {
-            if (Player2Token is null)
+            if (!(Player2Token is null) && Player1Token != joiningPlayer)
             {
                 Player2Token = joiningPlayer;
                 Status = GameStatus.Starting;

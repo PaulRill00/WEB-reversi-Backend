@@ -1,17 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ReversiMvcApp.Data;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ReversiMvcApp.Controllers;
 
 namespace ReversiMvcApp
@@ -28,20 +23,37 @@ namespace ReversiMvcApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // MVC Users Database
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(GetFilledConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddDbContext<ReversiDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("ReversiConnection")));
+            var dbContextUsers = services.BuildServiceProvider().GetRequiredService<ApplicationDbContext>();
+            dbContextUsers.Database.Migrate();
 
+            // Reversi Users Database
+            services.AddDbContext<ReversiDbContext>(options =>
+                options.UseSqlServer(GetFilledConnectionString("ReversiConnection")));
+
+            var dbContextReversi = services.BuildServiceProvider().GetRequiredService<ReversiDbContext>();
+            dbContextReversi.Database.Migrate();
+
+            // Configure remaining
             services.AddTransient<PlayerController, PlayerController>();
+            services.AddTransient<ApiController, ApiController>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+        }
+
+        private string GetFilledConnectionString(string name)
+        {
+            var connectionString = Configuration.GetConnectionString(name);
+            connectionString = connectionString.Replace("<SQLSource>", Environment.GetEnvironmentVariable("SQLSource"));
+            connectionString = connectionString.Replace("<SQLPass>", Environment.GetEnvironmentVariable("SQLPass"));
+
+            return connectionString;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,7 +70,6 @@ namespace ReversiMvcApp
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
