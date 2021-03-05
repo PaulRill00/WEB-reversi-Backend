@@ -45,6 +45,8 @@ namespace ReversiMvcApp
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            services.ConfigureApplicationCookie(options => options.LoginPath = "/Identity/Account/Login");
         }
 
         private string GetFilledConnectionString(string name)
