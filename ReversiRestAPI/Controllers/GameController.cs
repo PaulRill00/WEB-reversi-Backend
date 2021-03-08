@@ -81,7 +81,7 @@ namespace ReversiRestAPI.Controllers
             var result = game.Join(body.Player2Token);
 
             if (!result)
-                throw new HttpRequestException("Could not start the game");
+                throw new HttpRequestException("Could not join the game");
 
             iRepository.SaveGame(game);
             var x = ((GameAccessLayer) iRepository).Context.Games.ToList();

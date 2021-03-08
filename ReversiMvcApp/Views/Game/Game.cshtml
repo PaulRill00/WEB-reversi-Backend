@@ -1,0 +1,22 @@
+﻿@model ReversiRestApi.Models.Game
+
+<link href="@Url.Content("~/assets/css/style.css")" rel="stylesheet" type="text/css" />
+
+@{
+    ViewData["Title"] = "Game";
+}
+
+<div>
+    <h4>Game</h4>
+    <hr />
+    <div id="board"></div>
+</div>
+
+
+@section Scripts{
+    <script src="@Url.Content("~/assets/js/app.js")" type="text/javascript"></script>
+    
+    <script type="text/javascript">
+        Game.init('3dVxdLaR72baYjI2');
+    </script>
+}

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using ReversiMvcApp.Data;
 using ReversiRestAPI.Models.API;
+using ReversiRestAPI.Models.Database;
 
 namespace ReversiMvcApp.Controllers
 {
@@ -26,11 +27,23 @@ namespace ReversiMvcApp.Controllers
         {
             var games = await _apiController.GetListAsync<APIGame>("game/waiting");
 
+            ViewData["Error"] = ViewData["Error"] ?? "";
+
+            return View(games);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Joined()
+        {
+            var playerToken = _playerController.GetLoggedInPlayer(this).Guid;
+            var games = await _apiController.GetListAsync<APIGame>($"player/{playerToken}/games");
+
             ViewData["Error"] = TempData["Error"] ?? "";
 
             return View(games);
         }
 
+        [Authorize]
         public async Task<IActionResult> Join(string gameToken)
         {
             var playerToken = _playerController.GetLoggedInPlayer(this).Guid;
@@ -66,5 +79,13 @@ namespace ReversiMvcApp.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet("[controller]/{token}")]
+        public async Task<IActionResult> Game(string token)
+        {
+            var game = await _apiController.GetAsync<APIGame>($"game/{token}/");
+
+            return View();
+        } 
     }
 }

@@ -80,6 +80,11 @@ namespace ReversiMvcApp.Data
             return await MakeRequest(new GetRequest<IEnumerable<T>>() {Empty = Enumerable.Empty<T>()}, path);
         }
 
+        public async Task<T> GetAsync<T>(string path)
+        {
+            return await MakeRequest(new GetRequest<T>() { Empty = default(T) }, path);
+        }
+
         public async Task<T> PutAsync<T>(string path, T data)
         {
             return await MakeRequest(new PutRequest<T>() {Body = data}, path);
