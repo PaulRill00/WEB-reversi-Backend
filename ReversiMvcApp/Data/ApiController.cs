@@ -61,7 +61,7 @@ namespace ReversiMvcApp.Data
 
         private async Task<T> MakeRequest<T>(IRequest<T> request, string path)
         {
-            using var client = new HttpClient {BaseAddress = new Uri(baseUrl)};
+            using var client = new HttpClient { BaseAddress = new Uri(baseUrl) };
 
             //HTTP GET
             var result = await request.Request(client, path);
@@ -75,17 +75,17 @@ namespace ReversiMvcApp.Data
 
         }
 
-        public async Task<IEnumerable<T>> GetList<T>(string path)
+        public async Task<IEnumerable<T>> GetListAsync<T>(string path)
         {
             return await MakeRequest(new GetRequest<IEnumerable<T>>() {Empty = Enumerable.Empty<T>()}, path);
         }
 
-        public async Task<T> Put<T>(string path, T data)
+        public async Task<T> PutAsync<T>(string path, T data)
         {
             return await MakeRequest(new PutRequest<T>() {Body = data}, path);
         }
 
-        public async Task<T> Post<T>(string path, T data)
+        public async Task<T> PostAsync<T>(string path, T data)
         {
             return await MakeRequest(new PostRequest<T>() {Body = data}, path);
         }

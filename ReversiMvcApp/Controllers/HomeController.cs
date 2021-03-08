@@ -1,23 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using ReversiMvcApp.Models;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
-using ReversiMvcApp.Data;
 
 namespace ReversiMvcApp.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
         private readonly PlayerController _playerController;
-        private readonly ApiController _apiController;
 
-        public HomeController(ILogger<HomeController> logger, PlayerController playerController, ApiController apiController)
+        public HomeController(PlayerController playerController)
         {
-            _logger = logger;
             _playerController = playerController;
-            _apiController = apiController;
         }
 
         [Authorize]
@@ -34,6 +28,11 @@ namespace ReversiMvcApp.Controllers
 
         public IActionResult Index()
         {
+            if (!_playerController.IsLoggedIn(this))
+            {
+                return Redirect("Identity/Account/Login");
+            }
+                
             return View();
         }
     }

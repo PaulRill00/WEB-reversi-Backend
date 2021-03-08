@@ -24,6 +24,12 @@ namespace ReversiMvcApp.Controllers
             return GetPlayer(guid) ?? CreatePlayer(guid, currentUser.FindFirst(ClaimTypes.Name).Value);
         }
 
+        public bool IsLoggedIn(Controller origin)
+        {
+            ClaimsPrincipal currentUser = origin.User;
+            return currentUser.FindFirst(ClaimTypes.NameIdentifier) != null;
+        }
+
         public Player CreatePlayer(string guid, string name)
         {
             Player player = new Player()

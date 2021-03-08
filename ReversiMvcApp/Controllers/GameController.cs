@@ -24,7 +24,7 @@ namespace ReversiMvcApp.Controllers
         [Authorize]
         public async Task<IActionResult> Index()
         {
-            var games = await _apiController.GetList<APIGame>("game/waiting");
+            var games = await _apiController.GetListAsync<APIGame>("game/waiting");
 
             ViewData["Error"] = TempData["Error"] ?? "";
 
@@ -36,7 +36,7 @@ namespace ReversiMvcApp.Controllers
             var playerToken = _playerController.GetLoggedInPlayer(this).Guid;
             try
             {
-                await _apiController.Put($"game/{gameToken}/join",
+                await _apiController.PutAsync($"game/{gameToken}/join",
                     new APIGame() {Player2Token = playerToken});
             }
             catch (HttpRequestException e)
@@ -58,7 +58,7 @@ namespace ReversiMvcApp.Controllers
         public async Task<IActionResult> Create(string description)
         {
             var playerToken = _playerController.GetLoggedInPlayer(this).Guid;
-            var x = await _apiController.Post($"game", new APIGame()
+            await _apiController.PostAsync("game", new APIGame()
             {
                 Player1Token = playerToken,
                 Description = description,

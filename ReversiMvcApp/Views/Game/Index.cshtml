@@ -1,4 +1,6 @@
-﻿@model IEnumerable<ReversiRestAPI.Models.API.APIGame>
+﻿@using ReversiMvcApp.Controllers
+@model IEnumerable<ReversiRestAPI.Models.API.APIGame>
+@inject PlayerController PlayerController
 
 @{
     ViewData["Title"] = "Index";
@@ -35,24 +37,28 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Player1Token)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                <a asp-action="Join" asp-route-gameToken="@item.Token">Join</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ID)
+                </td>
+                <td>
+                    @{
+                        var player = PlayerController.GetPlayer(item.Player1Token);
+                        @Html.Raw(player.Name)
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    <a asp-action="Join" asp-route-gameToken="@item.Token">Join</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
