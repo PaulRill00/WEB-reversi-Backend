@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ReversiMvcApp.Data;
 using System;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using ReversiMvcApp.Controllers;
 
@@ -47,24 +46,9 @@ namespace ReversiMvcApp
             services.AddControllersWithViews();
             services.AddRazorPages();
 
-            services.AddAuthentication(auth =>
-            {
-                auth.DefaultScheme = IdentityConstants.ApplicationScheme;
-                auth.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-            }).AddCookie(auth =>
-            {
-                auth.AccessDeniedPath = new PathString("/Identity/Account/AccessDenied");
-            }).AddIdentityCookies();
-
             services.ConfigureApplicationCookie(options =>
             {
-                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-                options.Cookie.Name = "Reversi";
-                options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
-                options.LoginPath = "/Identity/Account/Login";
-                options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
-                options.SlidingExpiration = true;
+                options.LoginPath = new PathString("/Identity/Account/Login");
             });
         }
 
