@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ReversiMvcApp.Data;
 using System;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using ReversiMvcApp.Controllers;
 
 namespace ReversiMvcApp
@@ -26,8 +28,6 @@ namespace ReversiMvcApp
             // MVC Users Database
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(GetFilledConnectionString("DefaultConnection")));
-            /*services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddEntityFrameworkStores<ApplicationDbContext>();*/
             services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
 
             var dbContextUsers = services.BuildServiceProvider().GetRequiredService<ApplicationDbContext>();
@@ -47,7 +47,25 @@ namespace ReversiMvcApp
             services.AddControllersWithViews();
             services.AddRazorPages();
 
-            services.ConfigureApplicationCookie(options => options.LoginPath = "/Identity/Account/Login");
+            services.AddAuthentication(auth =>
+            {
+                auth.DefaultScheme = IdentityConstants.ApplicationScheme;
+                auth.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+            }).AddCookie(auth =>
+            {
+                auth.AccessDeniedPath = new PathString("/Identity/Account/AccessDenied");
+            }).AddIdentityCookies();
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+                options.Cookie.Name = "Reversi";
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
+                options.LoginPath = "/Identity/Account/Login";
+                options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
+                options.SlidingExpiration = true;
+            });
         }
 
         private string GetFilledConnectionString(string name)
