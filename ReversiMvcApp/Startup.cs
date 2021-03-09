@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ReversiMvcApp.Data;
 using System;
+using System.Diagnostics;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using ReversiMvcApp.Controllers;
 
@@ -48,7 +50,13 @@ namespace ReversiMvcApp
 
             services.ConfigureApplicationCookie(options =>
             {
-                options.LoginPath = new PathString("/Identity/Account/Login");
+                options.Events = new CookieAuthenticationEvents()
+                {
+                    OnRedirectToLogin = async (context) =>
+                    {
+                        context.HttpContext.Response.Redirect("https://paul.hbo-ict.org/Identity/Account/Login");
+                    }
+                };
             });
         }
 
@@ -79,7 +87,17 @@ namespace ReversiMvcApp
 
             app.UseRouting();
 
+            app.Use(x => context =>
+            {
+                Debug.WriteLine(context.ToString());
+                return x(context);
+            });
             app.UseAuthentication();
+            app.Use(x => context =>
+            {
+                Debug.WriteLine(context.ToString());
+                return x(context);
+            });
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

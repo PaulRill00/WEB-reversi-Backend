@@ -5,7 +5,7 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <ProjectGuid>7433d2f5-2c23-4c24-9cc9-83ff848b28e5</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
-    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/game/</DockerServiceUrl>
+    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/Identity/Account/Login</DockerServiceUrl>
     <DockerServiceName>reversimvcapp</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
