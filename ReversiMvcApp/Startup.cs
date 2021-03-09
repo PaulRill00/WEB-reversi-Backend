@@ -26,8 +26,9 @@ namespace ReversiMvcApp
             // MVC Users Database
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(GetFilledConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            /*services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddEntityFrameworkStores<ApplicationDbContext>();*/
+            services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
 
             var dbContextUsers = services.BuildServiceProvider().GetRequiredService<ApplicationDbContext>();
             dbContextUsers.Database.Migrate();
