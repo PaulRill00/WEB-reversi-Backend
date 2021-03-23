@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ReversiRestAPI.Interfaces;
 using ReversiRestApi.Models;
@@ -19,31 +20,32 @@ namespace ReversiRestAPI.DAL
             Games = Context.Games;
         }
 
-        public string AddGame(Game game)
+        public async Task<string> AddGame(Game game)
         {
             game.Token = Helpers.GenerateRandomString(16);
             Context.Add(GameModel.FromGame(game));
-            Context.SaveChanges();
+            await Context.SaveChangesAsync();
             return game.Token;
         }
 
-        public List<Game> GetGames()
+        public async Task<List<Game>> GetGames()
         {
-            return Games.Select(g => g.ToGame()).ToList();
+            return await Games.Select(g => g.ToGame()).ToListAsync();
         }
 
-        public Game? GetGame(string gameToken)
+        public async Task<Game> GetGameAsync(string gameToken)
         {
-            return Games.FirstOrDefault(x => x.Token == gameToken)?.ToGame() ?? null;
+            var game = await Games.FirstOrDefaultAsync(x => x.Token == gameToken);
+            return game.ToGame();
         }
 
-        public IList<Game> GetPlayerGames(string playerToken)
+        public async Task<List<Game>> GetPlayerGames(string playerToken)
         {
-            return Games.Where(x => x.Player1Token == playerToken || x.Player2Token == playerToken)
-                .Select(x => x.ToGame()).ToList();
+            return await Games.Where(x => x.Player1Token == playerToken || x.Player2Token == playerToken)
+                .Select(x => x.ToGame()).ToListAsync();
         }
 
-        public void SaveGame(Game game)
+        public async Task SaveGame(Game game)
         {
             var local = Context.Games.FirstOrDefault(x => x.ID == game.ID);
             Context.Entry(local).State = EntityState.Detached;
@@ -53,7 +55,7 @@ namespace ReversiRestAPI.DAL
             local = GameModel.FromGame(game);
             Context.Entry(local).State = EntityState.Modified;
 
-            Context.SaveChanges();
+            await Context.SaveChangesAsync();
         }
     }
 }

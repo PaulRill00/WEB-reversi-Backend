@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using ReversiRestApi.Models;
 
 namespace ReversiRestAPI.Interfaces
 {
     public interface IGameRepository
     {
-        string AddGame(Game game);
-        List<Game> GetGames();
-        Game? GetGame(string gameToken);
-        IList<Game> GetPlayerGames(string playerToken);
-        void SaveGame(Game game);
+        Task<string> AddGame(Game game);
+        Task<List<Game>> GetGames();
+        Task<Game> GetGameAsync(string gameToken);
+        Task<List<Game>> GetPlayerGames(string playerToken);
+        Task SaveGame(Game game);
     }
 }

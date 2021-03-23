@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace ReversiMvcApp.Data
@@ -61,7 +63,13 @@ namespace ReversiMvcApp.Data
 
         private async Task<T> MakeRequest<T>(IRequest<T> request, string path)
         {
-            using var client = new HttpClient { BaseAddress = new Uri(baseUrl) };
+            using var client = new HttpClient();
+
+            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            client.BaseAddress = new Uri(baseUrl);
 
             //HTTP GET
             var result = await request.Request(client, path);

@@ -11,6 +11,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using ReversiMvcApp.Controllers;
+using ReversiMvcApp.Hubs;
 
 namespace ReversiMvcApp
 {
@@ -42,11 +43,13 @@ namespace ReversiMvcApp
             dbContextReversi.Database.Migrate();
 
             // Configure remaining
-            services.AddTransient<PlayerController, PlayerController>();
-            services.AddTransient<ApiController, ApiController>();
+            services.AddTransient<PlayerController>();
+            services.AddTransient<ApiController>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            services.AddSignalR();
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -86,18 +89,8 @@ namespace ReversiMvcApp
             app.UseStaticFiles();
 
             app.UseRouting();
-
-            app.Use(x => context =>
-            {
-                Debug.WriteLine(context.ToString());
-                return x(context);
-            });
+            
             app.UseAuthentication();
-            app.Use(x => context =>
-            {
-                Debug.WriteLine(context.ToString());
-                return x(context);
-            });
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -106,6 +99,7 @@ namespace ReversiMvcApp
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
+                endpoints.MapHub<GameHub>("/gamehub");
             });
         }
     }

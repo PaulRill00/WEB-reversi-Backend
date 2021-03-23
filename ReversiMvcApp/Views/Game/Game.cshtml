@@ -1,4 +1,10 @@
-﻿@model ReversiRestApi.Models.Game
+﻿@using Microsoft.AspNetCore.SignalR.Client
+@using Microsoft.IdentityModel.Tokens
+@using ReversiMvcApp.Controllers
+@using ReversiMvcApp.Hubs
+@using System.Security.Claims
+
+@model ReversiRestAPI.Models.API.APIGame
 
 <link href="@Url.Content("~/assets/css/style.css")" rel="stylesheet" type="text/css" />
 
@@ -14,9 +20,39 @@
 
 
 @section Scripts{
+    <script src="@Url.Content("~/assets/js/vendor.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/assets/js/templates.js")" type="text/javascript"></script>
     <script src="@Url.Content("~/assets/js/app.js")" type="text/javascript"></script>
-    
+    <script src="~/js/signalr/signalr.js"></script>
+
     <script type="text/javascript">
-        Game.init('3dVxdLaR72baYjI2');
+
+        Game.init("@Environment.GetEnvironmentVariable("APIUrl")", "@Model.Token", "@User.FindFirst(ClaimTypes.NameIdentifier).Value");
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/gamehub")
+            /*.configureLogging(signalR.LogLevel.Information)*/
+            .build();
+
+        async function start() {
+            try {
+                await connection.start();
+                await connection.invoke("SendMessage", "@Model.Token", "Join", true);
+            } catch (err) {
+                setTimeout(start, 5000);
+            }
+        }
+
+        connection.onclose(start);
+        start();
+
+        $('#board').on('boardUpdate', async function () {
+            await connection.invoke("SendMessage", "@Model.Token", "Move", false);
+        });
+
+        connection.on("ReceiveMessage", (gameToken, message, join) => {
+            // Send update request to the game
+            Game.update();
+        });
     </script>
 }

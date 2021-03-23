@@ -13,6 +13,8 @@ namespace ReversiRestAPI
 {
     public class Startup
     {
+        readonly string MyCors = "_myCors";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -31,6 +33,19 @@ namespace ReversiRestAPI
 
             services.AddDbContext<DatabaseContext>(options =>
                 options.UseSqlServer(connectionString));
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyCors, builder =>
+                {
+                    
+
+                    builder.WithOrigins("http://localhost", "http://localhost:3000", "http://localhost:58052", "https://paul.hbo-ict.org")
+                        .WithMethods("GET", "PUT", "POST")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
 
             var dbContext = services.BuildServiceProvider().GetRequiredService<DatabaseContext>();
             services.AddSingleton(typeof(IGameRepository), new GameAccessLayer(dbContext));
@@ -51,6 +66,8 @@ namespace ReversiRestAPI
             app.UseDefaultFiles();
 
             app.UseStaticFiles();
+
+            app.UseCors(MyCors);
 
             app.UseAuthorization();
 

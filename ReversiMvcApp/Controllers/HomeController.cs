@@ -7,26 +7,15 @@ namespace ReversiMvcApp.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly PlayerController _playerController;
-
-        public HomeController(PlayerController playerController)
-        {
-            _playerController = playerController;
-        }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
+        [Authorize]
         public IActionResult Index()
         {
-            if (!_playerController.IsLoggedIn(this))
-            {
-                return Redirect("Identity/Account/Login");
-            }
-                
             return View();
         }
     }

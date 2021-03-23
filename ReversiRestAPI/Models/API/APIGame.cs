@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using ReversiRestApi.Enums;
 using ReversiRestApi.Models;
 
@@ -15,6 +16,8 @@ namespace ReversiRestAPI.Models.API
         public string? MovingPlayer { get; set; }
         public string? Moving { get; set; }
         public string? Status { get; set; }
+        public string? Actions { get; set; }
+        public string? Winner { get; set; }
 
         public static APIGame FromGame(Game game)
         {
@@ -29,6 +32,8 @@ namespace ReversiRestAPI.Models.API
                 MovingPlayer = game.Moving != Color.None ? game.Players[game.Moving] : null,
                 Moving = game.Moving != Color.None ? game.Moving.ToString() : null,
                 Status = game.Status.ToString(),
+                Actions = JsonConvert.SerializeObject(game.GetGameActions()),
+                Winner = game.Winner != "" ? game.Winner : null,
             };
         }
     }

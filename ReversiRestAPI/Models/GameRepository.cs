@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ReversiRestAPI.Interfaces;
 using ReversiRestApi.Models;
 
@@ -35,22 +36,23 @@ namespace ReversiRestAPI.Models
             };
         }
 
-        public string AddGame(Game game)
+        public Task<string> AddGame(Game game)
         {
             game.Token = Helpers.GenerateRandomString(16);
             Games.Add(game);
-            return game.Token;
+            return Task.Run(() => game.Token);
         }
 
-        public List<Game> GetGames() => Games;
+        public Task<List<Game>> GetGames() => Task.Run(() => Games);
 
-        public Game GetGame(string gameToken) => Games.FirstOrDefault(x => x.Token == gameToken);
+        public Task<Game> GetGameAsync(string gameToken) => Task.Run(() => Games.FirstOrDefault(x => x.Token == gameToken));
 
-        public IList<Game> GetPlayerGames(string playerToken) =>
-            Games.FindAll(x => x.Player1Token == playerToken || x.Player2Token == playerToken);
+        public Task<List<Game>> GetPlayerGames(string playerToken) =>
+            Task.Run(() => Games.FindAll(x => x.Player1Token == playerToken || x.Player2Token == playerToken));
 
-        public void SaveGame(Game game)
+        public async Task SaveGame(Game game)
         {
+            await Task.Run(() => { });
         }
     }
 }

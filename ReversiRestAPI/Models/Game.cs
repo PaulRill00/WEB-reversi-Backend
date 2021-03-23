@@ -5,6 +5,7 @@ using System.Numerics;
 using ReversiRestApi.Enums;
 using ReversiRestAPI.Enums;
 using ReversiRestApi.Interfaces;
+using ReversiRestAPI.Models.API;
 
 namespace ReversiRestApi.Models
 {
@@ -18,7 +19,7 @@ namespace ReversiRestApi.Models
         public Color[,] Board { get; set; }
         public Color Moving { get; set; }
         public Color OppositeMoving => GetOpposingColor(Moving);
-        public int MoveCount { get; set; }
+        public int MoveCount { get; set; } = 4;
         public GameStatus Status { get; set; }
         public string? Winner { get; set; }
         public Dictionary<Color, string> Players { get; set; }
@@ -359,7 +360,7 @@ namespace ReversiRestApi.Models
 
         public bool Join(string joiningPlayer)
         {
-            if (!(Player2Token is null) && Player1Token != joiningPlayer)
+            if (!(Player2Token is null) && Player1Token != joiningPlayer && joiningPlayer != "")
             {
                 Player2Token = joiningPlayer;
                 Status = GameStatus.Starting;
@@ -422,6 +423,30 @@ namespace ReversiRestApi.Models
         {
             var winner = surrenderer == Player1Token ? Player2Token : Player1Token;
             FinishGame(winner);
+        }
+
+        public List<GameAction> GetGameActions()
+        {
+            List<GameAction> list = new List<GameAction>();
+            if (Status == GameStatus.Starting)
+            {
+                list.Add(new GameAction
+                {
+                    Label = "Start Game",
+                    Action = "start"
+                });
+            }
+
+            if (Status == GameStatus.Running)
+            {
+                list.Add(new GameAction
+                {
+                    Label = "Surrender Game",
+                    Action = "surrender"
+                });
+            }
+
+            return list;
         }
     }
 }

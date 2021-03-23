@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ReversiRestAPI.Interfaces;
 using ReversiRestAPI.Models.API;
 
@@ -19,12 +20,18 @@ namespace ReversiRestAPI.Controllers
 
         // GET api/player/{player}/games
         [HttpGet("{player}/games")]
-        public ActionResult<IEnumerable<APIGame>> GetGamesByPlayerToken(string player) =>
-            iRepository.GetPlayerGames(player).Select(APIGame.FromGame).ToList();
+        public async Task<ActionResult<IEnumerable<APIGame>>> GetGamesByPlayerToken(string player)
+        {
+            var games = await iRepository.GetPlayerGames(player);
+            return games.Select(APIGame.FromGame).ToList();
+        }
 
         // GET api/player/{player}/wins
         [HttpGet("{player}/wins")]
-        public ActionResult<int> GetPlayerWins(string player) =>
-            iRepository.GetPlayerGames(player).Count(x => x.Winner == player);
+        public async Task<ActionResult<int>> GetPlayerWins(string player)
+        {
+            var games = await iRepository.GetPlayerGames(player);
+            return games.Count(x => x.Winner == player);
+        }
     }
 }

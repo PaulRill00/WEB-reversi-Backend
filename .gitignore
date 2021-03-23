@@ -394,3 +394,5 @@ ReversiRestAPI/Properties/launchSettings.json
 
 ReversiMvcApp/appsettings.json
 ReversiMvcApp/Properties/launchSettings.json
+ReversiMvcApp/wwwroot/index.html
+ReversiMvcApp/wwwroot/assets/

@@ -8,10 +8,15 @@ services:
       dockerfile: ReversiMvcApp/Dockerfile
     depends_on:
       - reversirestapi
+    ports:
+      - "80"
+      - "443"
     environment:
       SQLSource: "mssql"
       SQLPass: "U4zgsHysuJ8"
       APISource: "reversirestapi"
+      APIUrl: "http://localhost:5001/api/"
+      Environment: "Development"
 
   reversirestapi:
     image: ${DOCKER_REGISTRY-}reversirestapi
@@ -20,6 +25,8 @@ services:
       dockerfile: ReversiRestAPI/Dockerfile
     depends_on:
       - mssql
+    ports:
+      - "5001:80"
     environment:
       SQLSource: "mssql"
       SQLPass: "U4zgsHysuJ8"

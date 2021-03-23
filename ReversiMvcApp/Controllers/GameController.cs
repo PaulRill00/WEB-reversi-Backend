@@ -1,21 +1,23 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using ReversiMvcApp.Data;
+using ReversiMvcApp.Hubs;
 using ReversiRestAPI.Models.API;
-using ReversiRestAPI.Models.Database;
 
 namespace ReversiMvcApp.Controllers
 {
     public class GameController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<GameController> _logger;
         private readonly PlayerController _playerController;
         private readonly ApiController _apiController;
 
-        public GameController(ILogger<HomeController> logger, PlayerController playerController, ApiController apiController)
+        public GameController(ILogger<GameController> logger, PlayerController playerController, ApiController apiController)
         {
             _logger = logger;
             _playerController = playerController;
@@ -50,9 +52,9 @@ namespace ReversiMvcApp.Controllers
             try
             {
                 await _apiController.PutAsync($"game/{gameToken}/join",
-                    new APIGame() {Player2Token = playerToken});
+                    new APIAction() {Player = playerToken});
             }
-            catch (HttpRequestException e)
+            catch (HttpRequestException)
             {
                 TempData["Error"] = "Could not join the game";
             }
@@ -80,12 +82,13 @@ namespace ReversiMvcApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize]
         [HttpGet("[controller]/{token}")]
         public async Task<IActionResult> Game(string token)
         {
             var game = await _apiController.GetAsync<APIGame>($"game/{token}/");
 
-            return View();
+            return View(game);
         } 
     }
 }

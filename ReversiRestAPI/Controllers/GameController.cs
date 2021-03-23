@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using ReversiRestAPI.DAL;
 using ReversiRestAPI.Interfaces;
 using ReversiRestApi.Models;
@@ -23,19 +25,25 @@ namespace ReversiRestAPI.Controllers
 
         // GET api/game
         [HttpGet]
-        public ActionResult<IEnumerable<APIGame>> GetAllGames() =>
-            iRepository.GetGames().Select(APIGame.FromGame).ToList();
+        public async Task<ActionResult<IEnumerable<APIGame>>> GetAllGames()
+        {
+            var games = await iRepository.GetGames();
+            return games.Select(APIGame.FromGame).ToList();
+        }
 
         // GET api/game/waiting
         [HttpGet("waiting")]
-        public ActionResult<IEnumerable<APIGame>> GetGameDescriptionsOfGamesWithWaitingPlayers() =>
-            iRepository.GetGames().FindAll(x => x.Player2Token == "").Select(APIGame.FromGame).ToList();
+        public async Task<ActionResult<IEnumerable<APIGame>>> GetGameDescriptionsOfGamesWithWaitingPlayers()
+        {
+            var games = await iRepository.GetGames();
+            return games.FindAll(x => x.Player2Token == "").Select(APIGame.FromGame).ToList();
+        }
 
         // POST api/game
         [HttpPost]
-        public void AddNewGame([FromBody] APIGame game)
+        public async Task AddNewGame([FromBody] APIGame game)
         {
-            iRepository.AddGame(new Game()
+            await iRepository.AddGame(new Game()
             {
                 Player1Token = game.Player1Token ?? "",
                 Description = game.Description ?? "",
@@ -44,55 +52,54 @@ namespace ReversiRestAPI.Controllers
 
         // GET api/game/{token}
         [HttpGet("{token}")]
-        public ActionResult<APIGame> GetGameByToken(string token)
+        public async Task<ActionResult<APIGame>> GetGameByToken(string token)
         {
-            var game = iRepository.GetGame(token);
+            var game = await iRepository.GetGameAsync(token);
             if (game is null)
-                return NotFound();
+                return StatusCode((int)HttpStatusCode.NotFound, "Game not found");
 
             return APIGame.FromGame(game);
         }
 
         // PUT api/game/{token}/start
         [HttpPut("{token}/start")]
-        public ActionResult<APIGame> StartGame(string token, [FromBody] APIAction body)
+        public async Task<ActionResult<APIGame>> StartGame(string token, [FromBody] APIAction body)
         {
-            var game = iRepository.GetGame(token);
+            var game = await iRepository.GetGameAsync(token);
             if (game is null)
-                return NotFound();
-            
+                return StatusCode((int)HttpStatusCode.NotFound, "Game not found");
+
             var result = game.StartGame(body.Player);
 
             if (!result)
                 throw new Exception("Could not start the game");
 
-            iRepository.SaveGame(game);
+            await iRepository.SaveGame(game);
             return APIGame.FromGame(game);
         }
 
         // PUT api/game/{token}/join
         [HttpPut("{token}/join")]
-        public ActionResult<APIGame> JoinGame(string token, [FromBody] APIGame body)
+        public async Task<ActionResult<APIGame>> JoinGame(string token, [FromBody] APIAction body)
         {
-            var game = iRepository.GetGame(token);
+            var game = await iRepository.GetGameAsync(token);
             if (game is null)
-                return NotFound();
+                return StatusCode((int)HttpStatusCode.NotFound, "Game not found");
 
-            var result = game.Join(body.Player2Token);
+            var result = game.Join(body.Player);
 
             if (!result)
                 throw new HttpRequestException("Could not join the game");
 
-            iRepository.SaveGame(game);
-            var x = ((GameAccessLayer) iRepository).Context.Games.ToList();
+            await iRepository.SaveGame(game);
             return APIGame.FromGame(game);
         }
 
         // GET api/game/{token}/turn
         [HttpGet("{token}/turn")]
-        public ActionResult<string> GetCurrentPlayer(string token)
+        public async Task<ActionResult<string>> GetCurrentPlayer(string token)
         {
-            var game = iRepository.GetGame(token);
+            var game = await iRepository.GetGameAsync(token);
             if (game is null)
                 return NotFound();
 
@@ -101,33 +108,33 @@ namespace ReversiRestAPI.Controllers
 
         // PUT api/game/{token}/move
         [HttpPut("{token}/move")]
-        public ActionResult<APIGame> SetMove(string token, [FromBody] APIAction body)
+        public async Task<ActionResult<APIGame>> SetMove(string token, [FromBody] APIAction body)
         {
-            var game = iRepository.GetGame(token);
+            var game = await iRepository.GetGameAsync(token);
             if (game is null)
-                return NotFound();
+                return StatusCode((int)HttpStatusCode.NotFound, "Game not found");
 
             if (game.GetPlayerColor(body.Player) != game.Moving)
-                return Unauthorized();
+                return StatusCode((int)HttpStatusCode.Unauthorized, "It is not your turn");
 
             var result = game.Move(body.RowMove, body.ColMove);
-            if (result)
-                return APIGame.FromGame(game);
+            if (!result)
+                return StatusCode((int)HttpStatusCode.Unauthorized, "Invalid move");
 
-            iRepository.SaveGame(game);
-            return Unauthorized();
+            await iRepository.SaveGame(game);
+            return APIGame.FromGame(game);
         }
 
         // PUT api/game/{token}/surrender
         [HttpPut("{token}/surrender")]
-        public ActionResult<APIGame> Surrender(string token, [FromBody] APIAction body)
+        public async Task<ActionResult<APIGame>> Surrender(string token, [FromBody] APIAction body)
         {
-            var game = iRepository.GetGame(token);
+            var game = await iRepository.GetGameAsync(token);
             if (game is null)
                 return NotFound();
 
             game.Surrender(body.Player);
-            iRepository.SaveGame(game);
+            await iRepository.SaveGame(game);
             return APIGame.FromGame(game);
         }
     }

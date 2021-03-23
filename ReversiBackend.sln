@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReversiMvcApp", "ReversiMvc
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{7433D2F5-2C23-4C24-9CC9-83FF848B28E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReversiRestAPI", "ReversiRestAPI\ReversiRestAPI.csproj", "{B5A628C2-8771-44E1-9E67-4B8D6F67BC91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReversiRestAPI", "ReversiRestAPI\ReversiRestAPI.csproj", "{B5A628C2-8771-44E1-9E67-4B8D6F67BC91}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
