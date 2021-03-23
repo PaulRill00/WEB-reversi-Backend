@@ -20,17 +20,17 @@ namespace ReversiBackendTesting
         [Test]
         public void GetGames_InitialCount_IsThree()
         {
-            Assert.AreEqual(3, repository.GetGames().Count);
+            Assert.AreEqual(3, repository.GetGames().Result.Count);
         }
 
         [Test]
         public void List_NewItem_ListCountIncreased()
         {
-            var initialCount = repository.GetGames().Count;
+            var initialCount = repository.GetGames().Result.Count;
 
             repository.AddGame(new Game());
 
-            Assert.AreNotEqual(initialCount, repository.GetGames().Count);
+            Assert.AreNotEqual(initialCount, repository.GetGames().Result.Count);
         }
 
         [Test]
@@ -51,26 +51,26 @@ namespace ReversiBackendTesting
         [Test]
         public void GetGame_ValidToken_ResultFound()
         {
-            Assert.IsNotNull(repository.GetGame("aaabbb"));
+            Assert.IsNotNull(repository.GetGameAsync("aaabbb").Result);
         }
 
         [Test]
         public void GetGame_InvalidToken_ResultNull()
         {
-            Assert.IsNull(repository.GetGame("abcdef"));
+            Assert.IsNull(repository.GetGameAsync("abcdef").Result);
         }
 
         [Test]
         public void GetGames_PlayerGames_GetOne()
         {
-            Assert.AreEqual(1, repository.GetPlayerGames("abcdef").Count);
+            Assert.AreEqual(1, repository.GetPlayerGames("abcdef").Result.Count);
         }
 
         [Test]
         public void GetGames_PlayerGames_IncreasedAfterAdd()
         {
             var playerToken = "abcdef";
-            var initialCount = repository.GetPlayerGames(playerToken).Count;
+            var initialCount = repository.GetPlayerGames(playerToken).Result.Count;
 
             repository.AddGame(new Game
             {
