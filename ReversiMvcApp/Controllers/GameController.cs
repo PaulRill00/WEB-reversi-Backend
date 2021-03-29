@@ -59,7 +59,7 @@ namespace ReversiMvcApp.Controllers
                 TempData["Error"] = "Could not join the game";
             }
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Game), new {token = gameToken});
         }
 
         [Authorize]
@@ -81,8 +81,7 @@ namespace ReversiMvcApp.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        [Authorize]
+        
         [HttpGet("[controller]/{token}")]
         public async Task<IActionResult> Game(string token)
         {

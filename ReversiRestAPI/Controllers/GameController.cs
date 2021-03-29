@@ -125,6 +125,27 @@ namespace ReversiRestAPI.Controllers
             return APIGame.FromGame(game);
         }
 
+        // PUT api/game/{token}/pass
+        [HttpPut("{token}/pass")]
+        public async Task<ActionResult<APIGame>> Pass(string token, [FromBody] APIAction body)
+        {
+            var game = await iRepository.GetGameAsync(token);
+            if (game is null)
+                return StatusCode((int)HttpStatusCode.NotFound, "Game not found");
+
+            if (game.GetPlayerColor(body.Player) != game.Moving)
+                return StatusCode((int)HttpStatusCode.Unauthorized, "It is not your turn");
+
+            var result = game.Pass();
+            if (!result)
+            {
+                return StatusCode((int)HttpStatusCode.Unauthorized, "You shall not pass, you have valid moves");
+            }
+            
+            await iRepository.SaveGame(game);
+            return APIGame.FromGame(game);
+        }
+
         // PUT api/game/{token}/surrender
         [HttpPut("{token}/surrender")]
         public async Task<ActionResult<APIGame>> Surrender(string token, [FromBody] APIAction body)

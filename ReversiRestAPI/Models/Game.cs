@@ -19,7 +19,7 @@ namespace ReversiRestApi.Models
         public Color[,] Board { get; set; }
         public Color Moving { get; set; }
         public Color OppositeMoving => GetOpposingColor(Moving);
-        public int MoveCount { get; set; } = 4;
+        public int MoveCount { get; set; }
         public GameStatus Status { get; set; }
         public string? Winner { get; set; }
         public Dictionary<Color, string> Players { get; set; }
@@ -316,6 +316,7 @@ namespace ReversiRestApi.Models
             FlipColorsFromDirections(rowMove, colMove, GetPossibleDirections(rowMove, colMove));
             SwapMoving();
             MoveCount++;
+            Finished();
             return true;
         }
 
@@ -443,6 +444,11 @@ namespace ReversiRestApi.Models
                 {
                     Label = "Surrender Game",
                     Action = "surrender"
+                });
+                list.Add(new GameAction
+                {
+                    Label = "Pass",
+                    Action = "pass"
                 });
             }
 

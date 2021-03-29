@@ -1,0 +1,63 @@
+﻿@using ReversiMvcApp.Controllers
+@model IEnumerable<ReversiRestAPI.Models.API.APIStats>
+@inject PlayerController PlayerController
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PlayerToken)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Wins)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Losses)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Draws)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GamesCreated)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GamesJoined)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @{
+                        var player = PlayerController.GetPlayer(item.PlayerToken);
+                        @Html.Raw(player.Name)
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Wins)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Losses)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Draws)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GamesCreated)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GamesJoined)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

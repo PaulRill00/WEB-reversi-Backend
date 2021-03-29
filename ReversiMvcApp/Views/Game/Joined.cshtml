@@ -8,9 +8,7 @@
 
 <h1>Joined</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<a asp-controller="Game" asp-action="Index" class="btn btn-primary">Waiting games</a>
 <table class="table">
     <thead>
         <tr>
@@ -35,32 +33,32 @@
     <tbody>
         @foreach (var item in Model)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ID)
-            </td>
-            <td>
-                @{
-                    var player1 = PlayerController.GetPlayer(item.Player1Token);
-                    @Html.Raw(player1.Name)
-                }
-            </td>
-            <td>
-                @{
-                    var player2 = PlayerController.GetPlayer(item.Player2Token);
-                    @Html.Raw(player2?.Name ?? "Not joined")
-                }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                <a asp-action="Game" asp-route-token="@item.Token">View</a>
-            </td>
-        </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ID)
+                </td>
+                <td>
+                    @{
+                        var player1 = PlayerController.GetPlayer(item.Player1Token);
+                        @Html.Raw(player1.Name)
+                    }
+                </td>
+                <td>
+                    @{
+                        var player2 = PlayerController.GetPlayer(item.Player2Token);
+                        @Html.Raw(player2?.Name ?? "Not joined")
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    <a asp-action="Game" asp-route-token="@item.Token">View</a>
+                </td>
+            </tr>
         }
     </tbody>
 </table>
