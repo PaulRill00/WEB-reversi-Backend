@@ -38,7 +38,7 @@ namespace ReversiRestAPI.Models
 
         public Task<string> AddGame(Game game)
         {
-            game.Token = Helpers.GenerateRandomString(16);
+            game.Token = StringHelper.GenerateRandomString(16);
             Games.Add(game);
             return Task.Run(() => game.Token);
         }

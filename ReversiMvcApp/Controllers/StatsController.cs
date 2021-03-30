@@ -20,8 +20,11 @@ namespace ReversiMvcApp.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var stats = await _apiController.GetListAsync<APIStats>("player/stats/");
-            return View(stats);
+            var response = await _apiController.GetListAsync<APIStats>("player/stats/");
+
+            ViewData["Error"] = TempData["Error"] ?? "";
+
+            return View(response.Response);
         }
     }
 }

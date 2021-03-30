@@ -27,37 +27,41 @@ namespace ReversiMvcApp.Controllers
         [Authorize]
         public async Task<IActionResult> Index()
         {
-            var games = await _apiController.GetListAsync<APIGame>("game/waiting");
+            var response = await _apiController.GetListAsync<APIGame>("game/waiting");
 
-            ViewData["Error"] = ViewData["Error"] ?? "";
+            ViewData["Error"] = TempData["Error"] ?? "";
 
-            return View(games);
+            return View(response.Response);
         }
 
         [Authorize]
         public async Task<IActionResult> Joined()
         {
             var playerToken = _playerController.GetLoggedInPlayer(this).Guid;
-            var games = await _apiController.GetListAsync<APIGame>($"player/{playerToken}/games");
+            var response = await _apiController.GetListAsync<APIGame>($"player/{playerToken}/games");
 
-            ViewData["Error"] = TempData["Error"] ?? "";
+            if (response.Error != null)
+            {
+                TempData["Error"] = response.Error;
+                return RedirectToAction("Index");
+            }
 
-            return View(games);
+            return View(response.Response);
         }
 
         [Authorize]
         public async Task<IActionResult> Join(string gameToken)
         {
             var playerToken = _playerController.GetLoggedInPlayer(this).Guid;
-            try
+            var response = await _apiController.PutAsync($"game/{gameToken}/join",
+                    new APIAction() { Player = playerToken });
+
+            if (response.Error != null)
             {
-                await _apiController.PutAsync($"game/{gameToken}/join",
-                    new APIAction() {Player = playerToken});
+                TempData["Error"] = response.Error;
+                return RedirectToAction("Index");
             }
-            catch (HttpRequestException)
-            {
-                TempData["Error"] = "Could not join the game";
-            }
+
 
             return RedirectToAction(nameof(Game), new {token = gameToken});
         }
@@ -65,6 +69,8 @@ namespace ReversiMvcApp.Controllers
         [Authorize]
         public IActionResult Create()
         {
+            ViewData["Error"] = TempData["Error"] ?? "";
+
             return View();
         }
 
@@ -73,11 +79,17 @@ namespace ReversiMvcApp.Controllers
         public async Task<IActionResult> Create(string description)
         {
             var playerToken = _playerController.GetLoggedInPlayer(this).Guid;
-            await _apiController.PostAsync("game", new APIGame()
+            var response = await _apiController.PostAsync("game", new APIGame()
             {
                 Player1Token = playerToken,
                 Description = description,
             });
+
+            if (response.Error != null)
+            {
+                TempData["Error"] = response.Error;
+                return RedirectToAction("Create");
+            }
 
             return RedirectToAction(nameof(Index));
         }
@@ -85,9 +97,15 @@ namespace ReversiMvcApp.Controllers
         [HttpGet("[controller]/{token}")]
         public async Task<IActionResult> Game(string token)
         {
-            var game = await _apiController.GetAsync<APIGame>($"game/{token}/");
+            var response = await _apiController.GetAsync<APIGame>($"game/{token}/");
 
-            return View(game);
+            if (response.Error != null)
+            {
+                TempData["Error"] = response.Error;
+                return RedirectToAction("Index");
+            }
+
+            return View(response.Response);
         } 
     }
 }

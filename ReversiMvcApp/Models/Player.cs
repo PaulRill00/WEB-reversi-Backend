@@ -9,5 +9,7 @@ namespace ReversiMvcApp.Models
         public int AmountWon { get; set; }
         public int AmountLost { get; set; }
         public int AmountDraw { get; set; }
+        public string Email { get; set; }
+        public string TFAKey { get; set; }
     }
 }

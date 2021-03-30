@@ -6,6 +6,8 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using ReversiRestAPI.Helpers;
 
 namespace ReversiMvcApp.Data
 {
@@ -61,7 +63,7 @@ namespace ReversiMvcApp.Data
             }
         }
 
-        private async Task<T> MakeRequest<T>(IRequest<T> request, string path)
+        private async Task<ResponseBody<T>> MakeRequest<T>(IRequest<T> request, string path, bool expectMessage = false)
         {
             using var client = new HttpClient();
 
@@ -74,33 +76,52 @@ namespace ReversiMvcApp.Data
             //HTTP GET
             var result = await request.Request(client, path);
 
+            var responseBody = new ResponseBody<T>();
+
             if (!result.IsSuccessStatusCode)
             {
-                throw new HttpRequestException(await result.Content.ReadAsStringAsync());
+                var response = await result.Content.ReadAsAsync<string>();
+                var responseConvert = JsonConvert.DeserializeObject<ResponseHelper.ResponseMessage>(response);
+
+                responseBody.Error = responseConvert.Error;
+                responseBody.Message = responseConvert.Message;
+            }
+            else
+            {
+                responseBody.Response = await result.Content.ReadAsAsync<T>();
             }
 
-            return await result.Content.ReadAsAsync<T>();
+            return responseBody;
 
         }
 
-        public async Task<IEnumerable<T>> GetListAsync<T>(string path)
+        public async Task<ResponseBody<IEnumerable<T>>> GetListAsync<T>(string path)
         {
             return await MakeRequest(new GetRequest<IEnumerable<T>>() {Empty = Enumerable.Empty<T>()}, path);
         }
 
-        public async Task<T> GetAsync<T>(string path)
+        public async Task<ResponseBody<T>> GetAsync<T>(string path)
         {
             return await MakeRequest(new GetRequest<T>() { Empty = default(T) }, path);
         }
 
-        public async Task<T> PutAsync<T>(string path, T data)
+        public async Task<ResponseBody<T>> PutAsync<T>(string path, T data)
         {
             return await MakeRequest(new PutRequest<T>() {Body = data}, path);
         }
 
-        public async Task<T> PostAsync<T>(string path, T data)
+        public async Task<ResponseBody<T>> PostAsync<T>(string path, T data)
         {
             return await MakeRequest(new PostRequest<T>() {Body = data}, path);
+        }
+
+        public class ResponseBody<T>
+        {
+            public T Response { get; set; }
+            
+            public string? Message { get; set; }
+            
+            public string? Error { get; set; }
         }
     }
 }

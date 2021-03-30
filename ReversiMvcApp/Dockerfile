@@ -1,6 +1,7 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
+RUN apt-get update -y && apt-get install -y libc6-dev libgdiplus libx11-dev && apt-get clean && ln -s /usr/lib/libgdiplus.so /usr/lib/gdiplus.dll
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443

@@ -22,7 +22,7 @@ namespace ReversiRestAPI.DAL
 
         public async Task<string> AddGame(Game game)
         {
-            game.Token = Helpers.GenerateRandomString(16);
+            game.Token = StringHelper.GenerateRandomString(16);
             Context.Add(GameModel.FromGame(game));
             await Context.SaveChangesAsync();
             return game.Token;
@@ -36,7 +36,7 @@ namespace ReversiRestAPI.DAL
         public async Task<Game> GetGameAsync(string gameToken)
         {
             var game = await Games.FirstOrDefaultAsync(x => x.Token == gameToken);
-            return game.ToGame();
+            return game?.ToGame();
         }
 
         public async Task<List<Game>> GetPlayerGames(string playerToken)

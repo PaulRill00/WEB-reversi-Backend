@@ -55,7 +55,7 @@ namespace ReversiRestAPI.Controllers
         {
             var games = await iRepository.GetGames();
             var player1Tokens = games.Select(x => x.Player1Token).Distinct();
-            var player2Tokens = games.Select(x => x.Player2Token).Distinct();
+            var player2Tokens = games.Where(x => x.Player2Token != null).Select(x => x.Player2Token).Distinct();
 
             return player1Tokens.Union(player2Tokens).ToArray();
         }
@@ -70,7 +70,10 @@ namespace ReversiRestAPI.Controllers
 
             foreach (string player in players)
             {
-                stats.Add((await GetPlayerStats(player)).Value);
+                if (player != "")
+                {
+                    stats.Add((await GetPlayerStats(player)).Value);
+                }
             }
 
             return stats.ToArray();

@@ -38,9 +38,7 @@ namespace ReversiRestAPI
             {
                 options.AddPolicy(name: MyCors, builder =>
                 {
-                    
-
-                    builder.WithOrigins("http://localhost", "http://localhost:3000", "http://localhost:64818", "https://paul.hbo-ict.org")
+                    builder.WithOrigins("http://localhost", "http://localhost:3000", "http://localhost:49639", "https://paul.hbo-ict.org")
                         .WithMethods("GET", "PUT", "POST")
                         .AllowAnyHeader()
                         .AllowAnyMethod();

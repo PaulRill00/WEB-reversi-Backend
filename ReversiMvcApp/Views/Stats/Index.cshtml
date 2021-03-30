@@ -12,7 +12,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.PlayerToken)
+                Player
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Wins)
@@ -39,7 +39,7 @@
                 <td>
                     @{
                         var player = PlayerController.GetPlayer(item.PlayerToken);
-                        @Html.Raw(player.Name)
+                        @Html.Raw(player?.Name ?? "Not Found")
                     }
                 </td>
                 <td>

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using ReversiMvcApp.Controllers;
 
 namespace ReversiMvcApp.Areas.Identity.Pages.Account
 {
@@ -26,6 +27,7 @@ namespace ReversiMvcApp.Areas.Identity.Pages.Account
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
+            PlayerController playerController,
             ILogger<RegisterModel> logger)
         {
             _userManager = userManager;
