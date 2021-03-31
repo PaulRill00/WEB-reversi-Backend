@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Threading.Tasks;
 using Google.Authenticator;
-using Microsoft.AspNetCore.Identity;
 using ReversiMvcApp.Controllers;
 using ReversiRestAPI.Models;
 

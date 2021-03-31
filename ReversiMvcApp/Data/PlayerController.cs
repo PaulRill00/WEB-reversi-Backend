@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ReversiMvcApp.Data;
 using ReversiMvcApp.Models;
@@ -13,29 +15,33 @@ namespace ReversiMvcApp.Controllers
     public class PlayerController : Controller
     {
         private ReversiDbContext context;
+        private readonly UserManager<IdentityUser> _userController;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public PlayerController(ReversiDbContext context)
+        public PlayerController(ReversiDbContext context, UserManager<IdentityUser> userController, RoleManager<IdentityRole> roleController)
         {
             this.context = context;
+            _userController = userController;
+            _roleManager = roleController;
         }
 
         [Authorize]
-        public Player GetLoggedInPlayer(Controller origin)
+        public async Task<Player> GetLoggedInPlayer(Controller origin)
         {
-            return GetPlayerOrCreate(origin.User);
+            return await GetPlayerOrCreate(origin.User);
         }
 
-        public Player GetLoggedInPlayer(ClaimsPrincipal user)
+        public async Task<Player> GetLoggedInPlayer(ClaimsPrincipal user)
         {
-            return GetPlayerOrCreate(user);
+            return await GetPlayerOrCreate(user);
         }
 
-        public Player GetPlayerOrCreate(ClaimsPrincipal user)
+        public async Task<Player> GetPlayerOrCreate(ClaimsPrincipal user)
         {
             var guid = user.FindFirst(ClaimTypes.NameIdentifier).Value;
             var name = user.FindFirst(ClaimTypes.Name).Value;
             var email = user.FindFirst(ClaimTypes.Email)?.Value;
-            return GetPlayer(guid) ?? CreatePlayer(guid, name, email ?? name);
+            return GetPlayer(guid) ?? await CreatePlayer(guid, name, email ?? name);
         }
 
         public bool IsLoggedIn(Controller origin)
@@ -44,7 +50,7 @@ namespace ReversiMvcApp.Controllers
             return currentUser.FindFirst(ClaimTypes.NameIdentifier) != null;
         }
 
-        public Player CreatePlayer(string guid, string name, string email)
+        public async Task<Player> CreatePlayer(string guid, string name, string email)
         {
             Player player = new Player()
             {
@@ -56,13 +62,27 @@ namespace ReversiMvcApp.Controllers
                 Email = email,
             };
             context.Players.Add(player);
-            context.SaveChangesAsync();
+            await context.SaveChangesAsync();
+
+            var user = await _userController.FindByIdAsync(player.Guid);
+
+
+            var role = await _roleManager.FindByNameAsync("User");
+
+
+            await _userController.AddToRoleAsync(user, "User");
+
             return player;
+        }
+
+        public async Task<IEnumerable<Player>> GetPlayers()
+        {
+            return await context.Players.ToListAsync();
         }
 
         public async Task SavePlayer(Player player)
         {
-            var current = await context.Players.FirstOrDefaultAsync(x => x.Email == player.Email);
+            var current = await context.Players.FirstOrDefaultAsync(x => x.Guid == player.Guid);
             context.Entry(current).State = EntityState.Detached;
             
             current = player;
@@ -74,6 +94,17 @@ namespace ReversiMvcApp.Controllers
         public Player GetPlayer(string guid)
         {
             return context.Players.FirstOrDefault(x => x.Guid == guid);
+        }
+
+        public async Task DeletePlayer(string guid)
+        {
+            var player = context.Players.FirstOrDefault(x => x.Guid == guid);
+
+            if (player != null)
+            {
+                context.Players.Remove(player);
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

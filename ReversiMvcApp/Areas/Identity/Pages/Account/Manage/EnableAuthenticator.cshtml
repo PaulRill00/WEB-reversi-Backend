@@ -9,7 +9,7 @@
     ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
 }
 @{
-    var player = PlayerController.GetLoggedInPlayer(User);
+    var player = await PlayerController.GetLoggedInPlayer(User);
     await GoogleAuthenticator.GenerateTFAKey(player);
     var info = GoogleAuthenticator.GenerateQrInfo(player);
 }

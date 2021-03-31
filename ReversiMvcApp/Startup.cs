@@ -7,14 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ReversiMvcApp.Data;
 using System;
-using System.Diagnostics;
-using Google.Authenticator;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http;
 using ReversiMvcApp.Controllers;
 using ReversiMvcApp.Hubs;
 using ReversiMvcApp.Models;
-using ReversiRestAPI.Models;
 
 namespace ReversiMvcApp
 {
@@ -33,7 +29,10 @@ namespace ReversiMvcApp
             // MVC Users Database
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(GetFilledConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
+            
+            services.AddDefaultIdentity<IdentityUser>()
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
             var dbContextUsers = services.BuildServiceProvider().GetRequiredService<ApplicationDbContext>();
             dbContextUsers.Database.Migrate();
@@ -93,7 +92,7 @@ namespace ReversiMvcApp
             app.UseStaticFiles();
 
             app.UseRouting();
-            
+
             app.UseAuthentication();
             app.UseAuthorization();
 

@@ -1,12 +1,8 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using ReversiMvcApp.Data;
-using ReversiMvcApp.Hubs;
 using ReversiRestAPI.Models.API;
 
 namespace ReversiMvcApp.Controllers
@@ -37,7 +33,7 @@ namespace ReversiMvcApp.Controllers
         [Authorize]
         public async Task<IActionResult> Joined()
         {
-            var playerToken = _playerController.GetLoggedInPlayer(this).Guid;
+            var playerToken = (await _playerController.GetLoggedInPlayer(this)).Guid;
             var response = await _apiController.GetListAsync<APIGame>($"player/{playerToken}/games");
 
             if (response.Error != null)
@@ -52,7 +48,7 @@ namespace ReversiMvcApp.Controllers
         [Authorize]
         public async Task<IActionResult> Join(string gameToken)
         {
-            var playerToken = _playerController.GetLoggedInPlayer(this).Guid;
+            var playerToken = (await _playerController.GetLoggedInPlayer(this)).Guid;
             var response = await _apiController.PutAsync($"game/{gameToken}/join",
                     new APIAction() { Player = playerToken });
 
@@ -78,7 +74,7 @@ namespace ReversiMvcApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(string description)
         {
-            var playerToken = _playerController.GetLoggedInPlayer(this).Guid;
+            var playerToken = (await _playerController.GetLoggedInPlayer(this)).Guid;
             var response = await _apiController.PostAsync("game", new APIGame()
             {
                 Player1Token = playerToken,

@@ -1,9 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.Encodings.Web;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -79,7 +74,7 @@ namespace ReversiMvcApp.Areas.Identity.Pages.Account.Manage
             // Strip spaces and hypens
             var verificationCode = Input.Code.Replace(" ", string.Empty).Replace("-", string.Empty);
 
-            var player = _playerController.GetLoggedInPlayer(User);
+            var player = await _playerController.GetLoggedInPlayer(User);
             var is2faTokenValid = _googleAuthenticator.ValidateAuthenticatorCode(player, verificationCode);
             if (!is2faTokenValid)
             {

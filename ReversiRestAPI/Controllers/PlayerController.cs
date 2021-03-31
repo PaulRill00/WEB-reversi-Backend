@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using ReversiRestAPI.Enums;
 using ReversiRestAPI.Interfaces;
 using ReversiRestAPI.Models.API;
