@@ -21,27 +21,18 @@ namespace ReversiMvcApp.Areas.Identity.Pages.Account.Manage
         private readonly GoogleAuthenticator _googleAuthenticator;
         private readonly PlayerController _playerController;
         private readonly ILogger<EnableAuthenticatorModel> _logger;
-        private readonly UrlEncoder _urlEncoder;
-
-        private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
         public EnableAuthenticatorModel(
             UserManager<IdentityUser> userManager,
             ILogger<EnableAuthenticatorModel> logger,
             GoogleAuthenticator googleAuthenticator,
-            PlayerController playerController,
-            UrlEncoder urlEncoder)
+            PlayerController playerController)
         {
             _userManager = userManager;
             _logger = logger;
-            _urlEncoder = urlEncoder;
             _googleAuthenticator = googleAuthenticator;
             _playerController = playerController;
         }
-
-        public string SharedKey { get; set; }
-
-        public string AuthenticatorUri { get; set; }
 
         [TempData]
         public string[] RecoveryCodes { get; set; }
@@ -113,23 +104,5 @@ namespace ReversiMvcApp.Areas.Identity.Pages.Account.Manage
                 return RedirectToPage("./TwoFactorAuthentication");
             }
         }
-
-        private string FormatKey(string unformattedKey)
-        {
-            var result = new StringBuilder();
-            int currentPosition = 0;
-            while (currentPosition + 4 < unformattedKey.Length)
-            {
-                result.Append(unformattedKey.Substring(currentPosition, 4)).Append(" ");
-                currentPosition += 4;
-            }
-            if (currentPosition < unformattedKey.Length)
-            {
-                result.Append(unformattedKey.Substring(currentPosition));
-            }
-
-            return result.ToString().ToLowerInvariant();
-        }
-
     }
 }

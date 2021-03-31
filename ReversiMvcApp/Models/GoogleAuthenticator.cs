@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Google.Authenticator;
 using Microsoft.AspNetCore.Identity;
@@ -25,7 +26,7 @@ namespace ReversiMvcApp.Models
 
             return new AuthenticatorInfo()
             {
-                ManualEntryKey = setupInfo.ManualEntryKey,
+                ManualEntryKey = FormatKey(setupInfo.ManualEntryKey),
                 QrCoreSetupImageUrl = setupInfo.QrCodeSetupImageUrl
             };
         }
@@ -47,6 +48,23 @@ namespace ReversiMvcApp.Models
         {
             public string QrCoreSetupImageUrl { get; set; }
             public string ManualEntryKey { get; set; }
+        }
+
+        private string FormatKey(string unformattedKey)
+        {
+            var result = new StringBuilder();
+            int currentPosition = 0;
+            while (currentPosition + 4 < unformattedKey.Length)
+            {
+                result.Append(unformattedKey.Substring(currentPosition, 4)).Append(" ");
+                currentPosition += 4;
+            }
+            if (currentPosition < unformattedKey.Length)
+            {
+                result.Append(unformattedKey.Substring(currentPosition));
+            }
+
+            return result.ToString().ToLowerInvariant();
         }
     }
 }
