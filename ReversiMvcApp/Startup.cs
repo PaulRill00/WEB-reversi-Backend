@@ -60,7 +60,7 @@ namespace ReversiMvcApp
                 {
                     OnRedirectToLogin = async (context) =>
                     {
-                        context.HttpContext.Response.Redirect("https://paul.hbo-ict.org/Identity/Account/Login");
+                        context.HttpContext.Response.Redirect("/Identity/Account/Login");
                     }
                 };
             });
